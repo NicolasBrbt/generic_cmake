@@ -1,0 +1,133 @@
+cmake_minimum_required(VERSION 3.12)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CLEAR_MODE "ON")
+
+get_filename_component(PROJECT_NAME "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
+
+set(INCLUDE_DIR ${CMAKE_BINARY_DIR}/include)
+set(LIB_DIR ${CMAKE_BINARY_DIR}/libs)
+set(BIN_DIR ${CMAKE_BINARY_DIR}/bin)
+
+set(APPCPP "main" "main_cpp")
+set(APPC "main_c")
+set(LIBC "")
+set(LIBCPP "")
+set(DYNLIB "Test")
+
+set(COMPOSANTS ${APPC} ${APPCPP} ${LIB} ${LIBCPP} ${DYNLIB})
+
+project(${PROJECT_NAME})
+
+file(MAKE_DIRECTORY ${INCLUDE_DIR})
+file(MAKE_DIRECTORY ${LIB_DIR})
+file(MAKE_DIRECTORY ${BIN_DIR})
+
+# Créer une cible personnalisée pour copier les fichiers d'en-tête
+add_custom_target(copy_headers ALL
+    COMMENT "Copying header files to the include directory"
+)
+
+# Créer une cible personnalisée pour copier les bibliothèques
+add_custom_target(copy_libs ALL
+    COMMENT "Copying libraries to the lib directory"
+)
+
+# Définir une cible personnalisée pour copier les exécutables
+add_custom_target(copy_executables ALL
+    COMMENT "Copying executables to bin directory"
+)
+
+# Définir une cible personnalisée pour nettoyer le répertoire de construction
+add_custom_target(clear ALL
+    COMMENT "Clearing build directory"
+)
+
+# Parcourir les composants
+foreach(subdirs ${COMPOSANTS})
+    add_subdirectory(${subdirs})
+
+    # Trouver les fichiers d'en-tête
+    file(GLOB HEADERS "${subdirs}/include/*.h" "${subdirs}/include/*.hpp")
+
+    # Ajouter les commandes de copie pour chaque fichier d'en-tête
+    foreach(HEADER ${HEADERS})
+        get_filename_component(HEADER_NAME ${HEADER} NAME)
+        add_custom_command(TARGET copy_headers
+            COMMAND ${CMAKE_COMMAND} -E copy ${HEADER} ${INCLUDE_DIR}/${HEADER_NAME}
+            DEPENDS ${HEADER}
+            COMMENT "Copie de ${HEADER} dans ${INCLUDE_DIR}"
+        )
+    endforeach()
+endforeach()
+
+# Ajouter les dépendances et commandes de copie pour chaque exécutable en C++
+foreach(EXE ${APPCPP})
+    add_dependencies(copy_executables ${EXE})
+    add_custom_command(TARGET copy_executables
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${EXE}> ${BIN_DIR}
+        COMMENT "Copie $<TARGET_FILE:${EXE}> dans ${BIN_DIR}"
+        VERBATIM
+    )
+endforeach()
+
+# Ajouter les dépendances et commandes de copie pour chaque exécutable en C
+foreach(EXE ${APPC})
+    add_dependencies(copy_executables ${EXE})
+    add_custom_command(TARGET copy_executables
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${EXE}> ${BIN_DIR}
+        COMMENT "Copie $<TARGET_FILE:${EXE}> dans ${BIN_DIR}"
+        VERBATIM
+    )
+endforeach()
+
+foreach(LIB ${LIBCPP})
+    add_dependencies(copy_libs ${LIB})
+    add_custom_command(TARGET copy_libs
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${LIB}> ${LIB_DIR}
+        COMMENT "Copie $<TARGET_FILE:${LIB}> dans ${LIB_DIR}"
+        VERBATIM
+    )
+endforeach()
+
+foreach(LIB ${LIBC})
+    add_dependencies(copy_libs ${LIB})
+    add_custom_command(TARGET copy_libs
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${LIB}> ${LIB_DIR}
+        COMMENT "Copie $<TARGET_FILE:${LIB}> dans ${LIB_DIR}"
+        VERBATIM
+    )
+endforeach(LIB ${LIBC})
+
+foreach(LIB ${DYNLIB})
+    add_dependencies(copy_libs ${LIB})
+    add_custom_command(TARGET copy_libs
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${LIB}> ${LIB_DIR}
+        COMMENT "Copie $<TARGET_FILE:${LIB}> dans ${LIB_DIR}"
+        VERBATIM
+    )
+endforeach(LIB ${LIBC})
+
+# Ajouter les dépendances et commandes de copie pour chaque fichier d'en-tête
+if(CLEAR_MODE)
+    #foreach(subdirs ${COMPOSANTS})
+    #    add_dependencies(clear ${subdirs})
+    #    add_custom_command(TARGET clear
+    #        COMMAND ${CMAKE_COMMAND} -E remove_directory ${subdirs}
+    #        COMMENT "Suppression du repertoire ${subdirs}/build"
+    #    )
+    #endforeach(subdirs ${COMPOSANTS})
+
+    add_custom_command(TARGET clear
+        COMMAND ${CMAKE_COMMAND} -E echo "Suppression du Makefile"
+        COMMAND ${CMAKE_COMMAND} -E remove "Makefile"
+        COMMAND ${CMAKE_COMMAND} -E echo "Suppression du repertoire CMakeFiles"
+        COMMAND ${CMAKE_COMMAND} -E remove_directory "CMakeFiles"
+        COMMAND ${CMAKE_COMMAND} -E echo "Suppression du cmake_install.cmake"
+        COMMAND ${CMAKE_COMMAND} -E remove "cmake_install.cmake"
+        COMMAND ${CMAKE_COMMAND} -E echo "Suppression du CMakeCache.txt"
+        COMMAND ${CMAKE_COMMAND} -E remove "CMakeCache.txt"
+        VERBATIM
+    )
+endif(CLEAR_MODE)

@@ -1,0 +1,7 @@
+file(GLOB MAIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+
+get_filename_component(PROJECT_NAME "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
+project(${PROJECT_NAME})
+
+add_executable(${PROJECT_NAME}  ${MAIN_SOURCES} ${MAIN_HEADERS})

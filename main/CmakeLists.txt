@@ -1,0 +1,8 @@
+file(GLOB MAIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+
+add_executable(main ${MAIN_SOURCES} ${MAIN_HEADERS})
+
+target_link_libraries(main PRIVATE
+    Test
+)
