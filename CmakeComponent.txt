@@ -1,0 +1,29 @@
+set(CLEAR_MODE "OFF")
+set(DEBUG "OFF")
+
+set(BSC_main "main")
+set(BSC_main_cpp "main_cpp")
+set(BSC_main_c "main_c")
+set(BSC_Test "Test")
+
+set(BSC_main_DEPS ${BSC_Test})
+set(BSC_main_cpp_DEPS "")
+set(BSC_main_c_DEPS "")
+set(BSC_Test_DEPS "")
+
+set(APPCPP ${BSC_main} ${BSC_main_cpp})
+set(APPC ${BSC_main_c})
+set(LIBC )
+set(LIBCPP ${BSC_Test})
+set(DYNLIB )
+
+set(COMPOSANTS ${APPC} ${APPCPP} ${LIB} ${LIBCPP} ${DYNLIB})
+
+if(DEBUG)
+    message(STATUS "COMPOSANTS: ${COMPOSANTS}")
+
+    foreach(component ${COMPOSANTS})
+        message(STATUS "Component: ${component}")
+        message(STATUS "Dependencies: ${BSC_${component}_DEPS}")
+    endforeach(component ${COMPOSANTS})
+endif(DEBUG)

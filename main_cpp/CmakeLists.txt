@@ -1,7 +1,16 @@
-file(GLOB MAIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
-get_filename_component(PROJECT_NAME "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
+set (main_cpp_SOURCES "")
+set (main_cpp_HEADERS"")
 
-project(${PROJECT_NAME})
-message(STATUS "Project name: ${PROJECT_NAME}")
-add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${MAIN_HEADERS})
+file(GLOB main_cpp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+file(GLOB main_cpp_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+
+add_executable(main_cpp ${main_cpp_SOURCES} ${main_cpp_HEADERS})
+
+target_include_directories(main_cpp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_dependencies(main_cpp copy_headers)
+if(MSVC)
+	target_compile_options(main_cpp PRIVATE /W4 /WX)
+else()
+	target_compile_options(main_cpp PRIVATE -Wall -Wextra -Wpedantic)
+endif()

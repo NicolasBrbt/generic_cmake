@@ -1,14 +1,11 @@
-cmake_minimum_required(VERSION 3.12)
+set (Test_SOURCES "")
+set (Test_HEADERS"")
 
-# Trouver tous les fichiers source et d'en-tête
-file(GLOB Test_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-file(GLOB Test_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+file(GLOB Test_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+file(GLOB Test_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
-# Créer une bibliothèque statique
-#add_library(Test STATIC ${Test_SOURCES} ${Test_HEADERS})
-add_library(Test SHARED ${Test_SOURCES} ${Test_HEADERS})
+add_library(Test STATIC ${Test_SOURCES} ${Test_HEADERS})
 
-# Inclure les répertoires d'en-têtes
-target_include_directories(Test PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+target_include_directories(Test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_dependencies(Test copy_headers)

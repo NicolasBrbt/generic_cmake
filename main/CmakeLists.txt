@@ -1,8 +1,18 @@
-file(GLOB MAIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+set (main_SOURCES "")
+set (main_HEADERS"")
 
-add_executable(main ${MAIN_SOURCES} ${MAIN_HEADERS})
+file(GLOB main_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+file(GLOB main_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
-target_link_libraries(main PRIVATE
-    Test
-)
+add_executable(main ${main_SOURCES} ${main_HEADERS})
+
+target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_link_libraries(main PUBLIC Test)
+
+add_dependencies(main copy_headers)
+if(MSVC)
+	target_compile_options(main PRIVATE /W4 /WX)
+else()
+	target_compile_options(main PRIVATE -Wall -Wextra -Wpedantic)
+endif()
