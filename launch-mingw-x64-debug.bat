@@ -1,7 +1,7 @@
 @echo off
 REM This script is used to launch the executable built with mingw-x64-debug
-REM Give the name of the executable
-set EXECUTABLE_NAME= "coucou"
+REM Give the name of the executable (without the extension or quotes)
+set EXECUTABLE_NAME=main
 REM Get the name of the current directory
 for %%I in (.) do set "CURRENT_DIR=%%~nxI"
 
