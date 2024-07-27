@@ -1,5 +1,5 @@
 set(CLEAR_MODE "OFF")
-set(DEBUG "OFF")
+set(PRINT "ON")
 
 set(BSC_main "main")
 set(BSC_main_cpp "main_cpp")
@@ -13,17 +13,31 @@ set(BSC_Test_DEPS "")
 
 set(APPCPP ${BSC_main} ${BSC_main_cpp})
 set(APPC ${BSC_main_c})
-set(LIBC )
+set(LIBC)
 set(LIBCPP ${BSC_Test})
-set(DYNLIB )
+set(DYNLIB)
 
 set(COMPOSANTS ${APPC} ${APPCPP} ${LIB} ${LIBCPP} ${DYNLIB})
 
-if(DEBUG)
-    message(STATUS "COMPOSANTS: ${COMPOSANTS}")
-
+if(PRINT)
     foreach(component ${COMPOSANTS})
-        message(STATUS "Component: ${component}")
-        message(STATUS "Dependencies: ${BSC_${component}_DEPS}")
+        message(NOTICE "------------------------------------------------------------------")
+        message(NOTICE "* Component: ${component}")
+        message(NOTICE "* Dependencies : ${BSC_${component}_DEPS}")
+        message(NOTICE "* Path : ${CMAKE_CURRENT_SOURCE_DIR}/${component}")
+        file(GLOB sources "${CMAKE_CURRENT_SOURCE_DIR}/${component}/src/*c" "${CMAKE_CURRENT_SOURCE_DIR}/${component}/src/*cpp")
+        file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/${component}/include/*h" "${CMAKE_CURRENT_SOURCE_DIR}/${component}/include/*hpp")
+        message(NOTICE "* Sources :")
+
+        foreach(source ${sources})
+            message(NOTICE "\t- ${source}")
+        endforeach(source ${sources})
+
+        message(NOTICE "* Headers :")
+        foreach(header ${headers})
+            message(NOTICE "\t- ${header}")
+        endforeach(header ${headers})
+
+        message(NOTICE "------------------------------------------------------------------\n")
     endforeach(component ${COMPOSANTS})
-endif(DEBUG)
+endif(PRINT)

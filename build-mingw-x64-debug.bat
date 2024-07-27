@@ -8,7 +8,7 @@ REM Get the path of the parent directory
 for %%I in (..) do set "PARENT_DIR=%%~fI"
 
 REM Define the new directory path
-set "NEW_DIR=%PARENT_DIR%\%CURRENT_DIR%-Visual-Studio-17-debug"
+set "NEW_DIR=%PARENT_DIR%\%CURRENT_DIR%-mingw-x64-debug"
 
 REM Check if the directory exists and delete it if it does
 if exist "%NEW_DIR%" (
@@ -23,6 +23,7 @@ REM Print the path of the new directory
 echo Created new directory: %NEW_DIR%
 
 REM Lauch the compilation with cmake
-cmake -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -S . -B "%NEW_DIR%"
+cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER="gcc.exe" -DCMAKE_CXX_COMPILER="g++.exe" -DCMAKE_BUILD_TYPE=Debug -S . -B "%NEW_DIR%"
 cmake --build "%NEW_DIR%"
+pause
 endlocal

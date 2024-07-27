@@ -1,11 +1,14 @@
 # Inclure le fichier des composants
 include(cmakeComponent.txt)
-
 cmake_minimum_required(VERSION 3.12)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-message(STATUS "CXX Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
-set(CMAKE__build Release)
+
+
+get_filename_component(PROJECT_NAME "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
+project(${PROJECT_NAME})
+
+message(STATUS "CMAKE_GENERATOR: ${CMAKE_GENERATOR}")
 
 # Options de compilation strictes
 if(MSVC)
@@ -20,9 +23,7 @@ endif()
 
 # Option pour activer les avertissements pour les fonctionnalités non standard
 
-# Récupérer le nom du projet
-get_filename_component(PROJECT_NAME "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
-project(${PROJECT_NAME})
+
 
 set(INCLUDE_DIR ${CMAKE_BINARY_DIR}/include)
 set(LIB_DIR ${CMAKE_BINARY_DIR}/libs)
@@ -63,11 +64,6 @@ foreach(appcpp ${APPCPP})
 
     file(APPEND ${component_cmakeLists} "\n")
     file(APPEND ${component_cmakeLists} "add_dependencies(${appcpp} copy_headers)\n")
-    file (APPEND ${component_cmakeLists} "if(MSVC)\n")
-    file (APPEND ${component_cmakeLists} "\ttarget_compile_options(${appcpp} PRIVATE /W4 /WX)\n")
-    file (APPEND ${component_cmakeLists} "else()\n")
-    file (APPEND ${component_cmakeLists} "\ttarget_compile_options(${appcpp} PRIVATE -Wall -Wextra -Wpedantic)\n")
-    file (APPEND ${component_cmakeLists} "endif()\n")
 endforeach(appcpp ${APPCPP})
 
 foreach(appc ${APPC})
@@ -94,11 +90,6 @@ foreach(appc ${APPC})
     file(APPEND ${component_cmakeLists} "add_dependencies(${appc} copy_headers)\n")
     file(APPEND ${component_cmakeLists} "\n")
     file(APPEND ${component_cmakeLists} "add_dependencies(${appc} copy_headers)\n")
-    file (APPEND ${component_cmakeLists} "if(MSVC)\n")
-    file (APPEND ${component_cmakeLists} "\ttarget_compile_options(${appc} PRIVATE /W4 /WX)\n")
-    file (APPEND ${component_cmakeLists} "else()\n")
-    file (APPEND ${component_cmakeLists} "\ttarget_compile_options(${appc} PRIVATE -Wall -Wextra -Wpedantic)\n")
-    file (APPEND ${component_cmakeLists} "endif()\n")
 endforeach(appc ${APPC})
 
 foreach(libc ${LIBC})
