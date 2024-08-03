@@ -43,101 +43,105 @@ add_custom_target(clear ALL)
 message(STATUS "Génération des CmakeLists.txt")
 
 foreach(appcpp ${APPCPP})
-    message(STATUS "Génération du CmakeLists.txt pour ${appcpp}")
-    set(component_cmakeLists "${appcpp}/CMakeLists.txt")
-    file(WRITE ${component_cmakeLists} "set (${appcpp}_SOURCES \"\")\n")
-    file(APPEND ${component_cmakeLists} "set (${appcpp}_HEADERS\"\")\n")
+    string(REGEX REPLACE "BSC_" "" component ${appcpp})
+    message(STATUS "Génération du CmakeLists.txt pour ${${appcpp}}")
+    set(component_cmakeLists "${${appcpp}}/CMakeLists.txt")
+    file(WRITE ${component_cmakeLists} "set (${component}_SOURCES \"\")\n")
+    file(APPEND ${component_cmakeLists} "set (${component}_HEADERS\"\")\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "file(GLOB ${appcpp}_SOURCES \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp\" \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.c\")\n")
-    file(APPEND ${component_cmakeLists} "file(GLOB ${appcpp}_HEADERS \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp\" \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.h\")\n")
+    file(APPEND ${component_cmakeLists} "file(GLOB ${component}_SOURCES \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp\" \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.c\")\n")
+    file(APPEND ${component_cmakeLists} "file(GLOB ${component}_HEADERS \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp\" \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.h\")\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_executable(${appcpp} \$\{${appcpp}_SOURCES\} \$\{${appcpp}_HEADERS\})\n")
+    file(APPEND ${component_cmakeLists} "add_executable(${component} \$\{${component}_SOURCES\} \$\{${component}_HEADERS\})\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "target_include_directories(${appcpp} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR}/include)\n")
+    file(APPEND ${component_cmakeLists} "target_include_directories(${component} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR}/include)\n")
 
-    if(NOT "${BSC_${appcpp}_DEPS}" STREQUAL "")
-        set(DEPS_NAMES "${BSC_${appcpp}_DEPS}")
-        string(REPLACE ";" " " DEPS_NAME_FORMATED "${DEPS_NAMES}")
+    if(NOT "${BSC_${component}_DEPS}" STREQUAL "")
+        set(DEPS_NAMES "${BSC_${component}_DEPS}")
+        string(REGEX REPLACE "BSC_" "" deps ${DEPS_NAMES})
         file(APPEND ${component_cmakeLists} "\n")
-        file(APPEND ${component_cmakeLists} "target_link_libraries(${appcpp} PUBLIC ${DEPS_NAME_FORMATED})\n")
+        file(APPEND ${component_cmakeLists} "target_link_libraries(${component} PUBLIC ${deps})\n")
     endif()
 
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_dependencies(${appcpp} copy_headers)\n")
+    file(APPEND ${component_cmakeLists} "add_dependencies(${component} copy_headers)\n")
 endforeach(appcpp ${APPCPP})
 
 foreach(appc ${APPC})
-    message(STATUS "Génération du CmakeLists.txt pour ${appc}")
-    set(component_cmakeLists "${appc}/CMakeLists.txt")
-    file(WRITE ${component_cmakeLists} "set (${appc}_SOURCES \"\")\n")
-    file(APPEND ${component_cmakeLists} "set (${appc}_HEADERS\"\")\n")
+    string(REGEX REPLACE "BSC_" "" component ${appc})
+    message(STATUS "Génération du CmakeLists.txt pour ${component}")
+    set(component_cmakeLists "${${appc}}/CMakeLists.txt")
+    file(WRITE ${component_cmakeLists} "set (${component}_SOURCES \"\")\n")
+    file(APPEND ${component_cmakeLists} "set (${component}_HEADERS\"\")\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "file(GLOB ${appc}_SOURCES \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.c\")\n")
-    file(APPEND ${component_cmakeLists} "file(GLOB ${appc}_HEADERS \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.h\")\n")
+    file(APPEND ${component_cmakeLists} "file(GLOB ${component}_SOURCES \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.c\")\n")
+    file(APPEND ${component_cmakeLists} "file(GLOB ${component}_HEADERS \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.h\")\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_executable(${appc} \$\{${appc}_SOURCES\} \$\{${appc}_HEADERS\})\n")
+    file(APPEND ${component_cmakeLists} "add_executable(${component} \$\{${component}_SOURCES\} \$\{${component}_HEADERS\})\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "target_include_directories(${appc} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR}/include)\n")
+    file(APPEND ${component_cmakeLists} "target_include_directories(${component} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR}/include)\n")
 
-    if(NOT "${BSC_${appc}_DEPS}" STREQUAL "")
-        set(DEPS_NAMES "${BSC_${appc}_DEPS}")
+    if(NOT "${BSC_${component}_DEPS}" STREQUAL "")
+        set(DEPS_NAMES "${BSC_${component}_DEPS}")
         string(REPLACE ";" " " DEPS_NAME_FORMATED "${DEPS_NAMES}")
         file(APPEND ${component_cmakeLists} "\n")
-        file(APPEND ${component_cmakeLists} "target_link_libraries(${appc} PUBLIC ${DEPS_NAME_FORMATED})\n")
+        file(APPEND ${component_cmakeLists} "target_link_libraries(${component} PUBLIC ${DEPS_NAME_FORMATED})\n")
     endif()
 
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_dependencies(${appc} copy_headers)\n")
+    file(APPEND ${component_cmakeLists} "add_dependencies(${component} copy_headers)\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_dependencies(${appc} copy_headers)\n")
+    file(APPEND ${component_cmakeLists} "add_dependencies(${component} copy_headers)\n")
 endforeach(appc ${APPC})
 
 foreach(libc ${LIBC})
-    message(STATUS "Génération du CmakeLists.txt pour la lib ${libc}")
-    set(component_cmakeLists "${libc}/CMakeLists.txt")
-    file(WRITE ${component_cmakeLists} "set (${libc}_SOURCES \"\")\n")
-    file(APPEND ${component_cmakeLists} "set (${libc}_HEADERS\"\")\n")
+    string(REGEX REPLACE "BSC_" "" component ${libc})
+    message(STATUS "Génération du CmakeLists.txt pour la lib ${component}")
+    set(component_cmakeLists "${${libc}}/CMakeLists.txt")
+    file(WRITE ${component_cmakeLists} "set (${component}_SOURCES \"\")\n")
+    file(APPEND ${component_cmakeLists} "set (${component}_HEADERS\"\")\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "file(GLOB ${libc}_SOURCES \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.c\")\n")
-    file(APPEND ${component_cmakeLists} "file(GLOB ${libc}_HEADERS \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.h\")\n")
+    file(APPEND ${component_cmakeLists} "file(GLOB ${component}_SOURCES \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.c\")\n")
+    file(APPEND ${component_cmakeLists} "file(GLOB ${component}_HEADERS \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.h\")\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_library(${libc} STATIC \$\{${libc}_SOURCES\} \$\{${libc}_HEADERS\})\n")
+    file(APPEND ${component_cmakeLists} "add_library(${component} STATIC \$\{${component}_SOURCES\} \$\{${component}_HEADERS\})\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "target_include_directories(${libc} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR}/include)\n")
+    file(APPEND ${component_cmakeLists} "target_include_directories(${component} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR}/include)\n")
 
-    if(NOT "${BSC_${libc}_DEPS}" STREQUAL "")
-        set(DEPS_NAMES "${BSC_${libc}_DEPS}")
+    if(NOT "${BSC_${component}_DEPS}" STREQUAL "")
+        set(DEPS_NAMES "${BSC_${component}_DEPS}")
         string(REPLACE ";" " " DEPS_NAME_FORMATED "${DEPS_NAMES}")
         file(APPEND ${component_cmakeLists} "\n")
-        file(APPEND ${component_cmakeLists} "target_link_libraries(${libc} PUBLIC ${DEPS_NAME_FORMATED})\n")
+        file(APPEND ${component_cmakeLists} "target_link_libraries(${component} PUBLIC ${DEPS_NAME_FORMATED})\n")
     endif()
 
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_dependencies(${libc} copy_headers)\n")
+    file(APPEND ${component_cmakeLists} "add_dependencies(${component} copy_headers)\n")
 endforeach(libc ${LIBC})
 
-foreach(libcpp ${LIBCPP})
-    message(STATUS "Génération du CmakeLists.txt pour la lib ${libcpp}")
-    set(component_cmakeLists "${libcpp}/CMakeLists.txt")
-    file(WRITE ${component_cmakeLists} "set (${libcpp}_SOURCES \"\")\n")
-    file(APPEND ${component_cmakeLists} "set (${libcpp}_HEADERS\"\")\n")
+foreach(libcpp ${LIBCPP})   
+    string(REGEX REPLACE "BSC_" "" component ${libcpp})
+    message(STATUS "Génération du CmakeLists.txt pour la lib ${component}")
+    set(component_cmakeLists "${${libcpp}}/CMakeLists.txt")
+    file(WRITE ${component_cmakeLists} "set (${component}_SOURCES \"\")\n")
+    file(APPEND ${component_cmakeLists} "set (${component}_HEADERS\"\")\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "file(GLOB ${libcpp}_SOURCES \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp\" \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.c\")\n")
-    file(APPEND ${component_cmakeLists} "file(GLOB ${libcpp}_HEADERS \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp\" \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.h\")\n")
+    file(APPEND ${component_cmakeLists} "file(GLOB ${component}_SOURCES \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp\" \"\${CMAKE_CURRENT_SOURCE_DIR}/src/*.c\")\n")
+    file(APPEND ${component_cmakeLists} "file(GLOB ${component}_HEADERS \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp\" \"\${CMAKE_CURRENT_SOURCE_DIR}/include/*.h\")\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_library(${libcpp} STATIC \$\{${libcpp}_SOURCES\} \$\{${libcpp}_HEADERS\})\n")
+    file(APPEND ${component_cmakeLists} "add_library(${component} STATIC \$\{${component}_SOURCES\} \$\{${component}_HEADERS\})\n")
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "target_include_directories(${libcpp} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR}/include)\n")
+    file(APPEND ${component_cmakeLists} "target_include_directories(${component} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR}/include)\n")
 
-    if(NOT "${BSC_${libcpp}_DEPS}" STREQUAL "")
-        set(DEPS_NAMES "${BSC_${libcpp}_DEPS}")
+    if(NOT "${BSC_${component}_DEPS}" STREQUAL "")
+        set(DEPS_NAMES "${BSC_${component}_DEPS}")
         string(REPLACE ";" " " DEPS_NAME_FORMATED "${DEPS_NAMES}")
         file(APPEND ${component_cmakeLists} "\n")
-        file(APPEND ${component_cmakeLists} "target_link_libraries(${libcpp} PUBLIC ${DEPS_NAME_FORMATED})\n")
+        file(APPEND ${component_cmakeLists} "target_link_libraries(${component} PUBLIC ${DEPS_NAME_FORMATED})\n")
     endif()
 
     file(APPEND ${component_cmakeLists} "\n")
-    file(APPEND ${component_cmakeLists} "add_dependencies(${libcpp} copy_headers)\n")
+    file(APPEND ${component_cmakeLists} "add_dependencies(${component} copy_headers)\n")
 endforeach(libcpp ${LIBCPP})
 
 foreach(dynlib ${DYNLIB})
@@ -167,9 +171,9 @@ endforeach(dynlib ${DYNLIB})
 message(STATUS "Fin de la génération des fichiers CMakeLists.txt")
 
 # Parcourir les composants
-foreach(subdirs ${COMPOSANTS})
-    add_subdirectory(${subdirs})
-    file(GLOB HEADERS "${subdirs}/include/*.h" "${subdirs}/include/*.hpp")
+foreach(bsc ${COMPOSANTS})
+    add_subdirectory(${${bsc}})
+    file(GLOB HEADERS "${${bsc}}/include/*.h" "${${bsc}}/include/*.hpp")
 
     # Ajouter les commandes de copie pour chaque fichier d'en-tête
     foreach(HEADER ${HEADERS})
@@ -180,54 +184,59 @@ foreach(subdirs ${COMPOSANTS})
             COMMENT "Copie de ${HEADER} dans ${INCLUDE_DIR}"
         )
     endforeach(HEADER ${HEADERS})
-endforeach(subdirs ${COMPOSANTS})
+endforeach(bsc ${COMPOSANTS})
 
 # Copie des executables C++ dans le répertoire bin
 foreach(EXE ${APPCPP})
-    add_dependencies(copy_executables ${EXE})
+    string(REGEX REPLACE "BSC_" "" component ${EXE})
+    add_dependencies(copy_executables ${component})
     add_custom_command(TARGET copy_executables
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${EXE}> ${BIN_DIR}
-        COMMENT "Copie $<TARGET_FILE:${EXE}> dans ${BIN_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${component}> ${BIN_DIR}
+        COMMENT "Copie $<TARGET_FILE:${component}> dans ${BIN_DIR}"
         VERBATIM
     )
 endforeach(EXE ${APPCPP})
 
 # Copie des executables C dans le répertoire bin
 foreach(EXE ${APPC})
-    add_dependencies(copy_executables ${EXE})
+    string(REGEX REPLACE "BSC_" "" component ${EXE})
+    add_dependencies(copy_executables ${component})
     add_custom_command(TARGET copy_executables
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${EXE}> ${BIN_DIR}
-        COMMENT "Copie $<TARGET_FILE:${EXE}> dans ${BIN_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${component}> ${BIN_DIR}
+        COMMENT "Copie $<TARGET_FILE:${component}> dans ${BIN_DIR}"
         VERBATIM
     )
 endforeach(EXE ${APPC})
 
 # Copie des libs C dans le répertoire libs
 foreach(LIBCPP ${LIBCPP})
-    add_dependencies(copy_libs ${LIBCPP})
+    string(REGEX REPLACE "BSC_" "" component ${LIBCPP})
+    add_dependencies(copy_libs ${component})
     add_custom_command(TARGET copy_libs
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${LIBCPP}> ${LIB_DIR}
-        COMMENT "Copie $<TARGET_FILE:${LIBCPP}> dans ${LIB_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${component}> ${LIB_DIR}
+        COMMENT "Copie $<TARGET_FILE:${component}> dans ${LIB_DIR}"
         VERBATIM
     )
 endforeach(LIBCPP ${LIBCPP})
 
 # Copie des libs C dans le répertoire libs
 foreach(LIBC ${LIBC})
-    add_dependencies(copy_libs ${LIBC})
+    string(REGEX REPLACE "BSC_" "" component ${LIBC})
+    add_dependencies(copy_libs ${component})
     add_custom_command(TARGET copy_libs
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${LIBC}> ${LIB_DIR}
-        COMMENT "Copie $<TARGET_FILE:${LIBC}> dans ${LIB_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${component}> ${LIB_DIR}
+        COMMENT "Copie $<TARGET_FILE:${component}> dans ${LIB_DIR}"
         VERBATIM
     )
 endforeach(LIBC ${LIBC})
 
 # Copie des libs dynamiques dans le répertoire libs
 foreach(DYNLIB ${DYNLIB})
-    add_dependencies(copy_libs ${DYNLIB})
+    string(REGEX REPLACE "BSC_" "" component ${DYNLIB})
+    add_dependencies(copy_libs ${component})
     add_custom_command(TARGET copy_libs
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${DYNLIB}> ${LIB_DIR}
-        COMMENT "Copie $<TARGET_FILE:${DYNLIB}> dans ${LIB_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${component}> ${LIB_DIR}
+        COMMENT "Copie $<TARGET_FILE:${component}> dans ${LIB_DIR}"
         VERBATIM
     )
 endforeach(DYNLIB ${LIBC})
