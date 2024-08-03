@@ -22,13 +22,13 @@ set(PRINT "ON") # Affichage des informations sur chaque composant (SOURCES, HEAD
 set(BSC_main "main") # Declaration du composant BSC_main
 set(BSC_Test "Test") # Declaration du composant BSC_Test
 
-set(BSC_main_DEPS ${BSC_Test}) # Declaration des dependances du composant BSC_main
+set(BSC_main_DEPS BSC_Test) # Declaration des dependances du composant BSC_main
 set(BSC_Test_DEPS "") # Declaration des dependances du composant BSC_Test (aucune dependance)
 
-set(APPCPP ${BSC_main}) # Declaration des applications C++
+set(APPCPP BSC_main) # Declaration des applications C++
 set(APPC ) # Declaration des applications C
 set(LIBC ) # Declaration des librairies C
-set(LIBCPP ${BSC_Test}) # Declaration des librairies C++
+set(LIBCPP BSC_Test) # Declaration des librairies C++
 set(DYNLIB ) # Declaration des librairies dynamiques
 ```
 
