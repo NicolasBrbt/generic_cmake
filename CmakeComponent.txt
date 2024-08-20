@@ -1,4 +1,3 @@
-set(CLEAR_MODE "OFF")
 set(PRINT "ON")
 
 set(BSC_main "main")
@@ -21,25 +20,65 @@ set(COMPOSANTS ${APPC} ${APPCPP} ${LIB} ${LIBCPP} ${DYNLIB})
 
 if(PRINT)
     foreach(BSC ${COMPOSANTS})
-        string(REGEX REPLACE "BSC_" ""  component ${BSC})
-        string(REGEX REPLACE "BSC_" ""  deps "${BSC_${component}_DEPS}")
-        message(NOTICE "------------------------------------------------------------------")
-        message(NOTICE "* Component: ${component}")
-        message(NOTICE "* Dependencies : ${deps}")
-        message(NOTICE "* Path : ${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}")
-        file(GLOB sources "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/src/*c" "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/src/*cpp")
-        file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/include/*h" "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/include/*hpp")
-        message(NOTICE "* Sources :")
+    set(sources "")
+    set(headers "")
+    set(dirs "")
+    
+    string(REGEX REPLACE "BSC_" "" component ${BSC})
+    string(REGEX REPLACE "BSC_" "" deps "${BSC_${component}_DEPS}")
+    
+    message(NOTICE "------------------------------------------------------------------")
+    message(NOTICE "* Component: ${component}")
+    message(NOTICE "* Dependencies : ${deps}")
+    message(NOTICE "* Path : ${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}")
+    
+    # Collecter les sous-répertoires dans 'include'
+    file(GLOB subdirsHeaders "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/include/*")
+    file(GLOB subdirsSources "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/src/*")
+    
+    foreach(dir ${subdirsHeaders})
+        if(IS_DIRECTORY ${dir})
+            list(APPEND dirs ${dir})
+            file(GLOB tmp_headers "${dir}/*.h" "${dir}/*.hpp")
+            list(APPEND headers ${tmp_headers})
+        endif()
+    endforeach()
 
-        foreach(source ${sources})
-            message(NOTICE "\t- ${source}")
-        endforeach(source ${sources})
+    foreach(dir ${subdirsSources})
+    if(IS_DIRECTORY ${dir})
+        list(APPEND dirs ${dir})
 
-        message(NOTICE "* Headers :")
-        foreach(header ${headers})
-            message(NOTICE "\t- ${header}")
-        endforeach(header ${headers})
+        # Collecter les headers dans chaque sous-répertoire
+        file(GLOB tmp_sources "${dir}/*.c" "${dir}/*.cpp")
+        list(APPEND sources ${tmp_sources})
+    endif()
+    endforeach()
 
+    
+    # Collecter les sources dans 'src'
+    file(GLOB tmp_sources "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/src/*.c" "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/src/*.cpp")
+    list(APPEND sources ${tmp_sources})
+    
+    # Collecter les headers dans 'include' (directement sous include, pas dans les sous-dossiers)
+    file(GLOB tmp_headers "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/${${BSC}}/include/*.hpp")
+    list(APPEND headers ${tmp_headers})
+    
+    message(NOTICE "* Sources :")
+    foreach(source ${sources})
+        message(NOTICE "\t- ${source}")
+    endforeach()
+    
+    message(NOTICE "* Headers :")
+    foreach(header ${headers})
+        message(NOTICE "\t- ${header}")
+    endforeach()
+    
+    message(NOTICE "* Sous-répertoires du projet :")
+    foreach(dir ${dirs})
+        message(NOTICE "\t- ${dir}")
+    endforeach()
+    
         message(NOTICE "------------------------------------------------------------------\n")
     endforeach(BSC ${COMPOSANTS})
 endif(PRINT)
+
